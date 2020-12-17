@@ -505,7 +505,7 @@ endif
 CPUOPTS += -fcommon
 
 ifeq ($(CORE_DEBUG), 1)
-   ifeq ($(PLATFORM), "win")
+   ifeq ($(MSYSTEM),MINGW32)
       LIBOPCODES = /mingw32/lib/binutils/libopcodes.a
       LIBBFD = /mingw32/lib/binutils/libbfd.a
       LIBIBERTY = /mingw32/lib/binutils/libiberty.a

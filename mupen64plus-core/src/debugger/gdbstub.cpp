@@ -80,7 +80,7 @@ using VAddr = u64;
 using u128 = std::array<std::uint64_t, 2>;
 static_assert(sizeof(u128) == 16, "u128 must be 128 bits wide");
 
-constexpr int GDB_BUFFER_SIZE = 10000;
+constexpr int GDB_BUFFER_SIZE = 4095;
 
 constexpr char GDB_STUB_START = '$';
 constexpr char GDB_STUB_END = '#';
@@ -118,86 +118,6 @@ constexpr char target_xml[] =
 <!DOCTYPE target SYSTEM "gdb-target.dtd">
 <target version="1.0">
 	<architecture>mips:4300</architecture>
-	<feature name="org.gnu.gdb.mips.cpu" idatitle="General registers">
-	  <reg name="zero" bitsize="64" type="data_ptr" regnum="0"/>
-	  <reg name="at" bitsize="64" type="data_ptr"/>
-	  <reg name="v0" bitsize="64" type="data_ptr"/>
-	  <reg name="v1" bitsize="64" type="data_ptr"/>
-	  <reg name="a0" bitsize="64" type="data_ptr"/>
-	  <reg name="a1" bitsize="64" type="data_ptr"/>
-	  <reg name="a2" bitsize="64" type="data_ptr"/>
-	  <reg name="a3" bitsize="64" type="data_ptr"/>
-	  <reg name="t0" bitsize="64" type="data_ptr"/>
-	  <reg name="t1" bitsize="64" type="data_ptr"/>
-	  <reg name="t2" bitsize="64" type="data_ptr"/>
-	  <reg name="t3" bitsize="64" type="data_ptr"/>
-	  <reg name="t4" bitsize="64" type="data_ptr"/>
-	  <reg name="t5" bitsize="64" type="data_ptr"/>
-	  <reg name="t6" bitsize="64" type="data_ptr"/>
-	  <reg name="t7" bitsize="64" type="data_ptr"/>
-	  <reg name="s0" bitsize="64" type="data_ptr"/>
-	  <reg name="s1" bitsize="64" type="data_ptr"/>
-	  <reg name="s2" bitsize="64" type="data_ptr"/>
-	  <reg name="s3" bitsize="64" type="data_ptr"/>
-	  <reg name="s4" bitsize="64" type="data_ptr"/>
-	  <reg name="s5" bitsize="64" type="data_ptr"/>
-	  <reg name="s6" bitsize="64" type="data_ptr"/>
-	  <reg name="s7" bitsize="64" type="data_ptr"/>
-	  <reg name="t8" bitsize="64" type="data_ptr"/>
-	  <reg name="t9" bitsize="64" type="data_ptr"/>
-	  <reg name="k0" bitsize="64" type="data_ptr"/>
-	  <reg name="k1" bitsize="64" type="data_ptr"/>
-	  <reg name="gp" bitsize="64" type="data_ptr"/>
-	  <reg name="sp" bitsize="64" type="stack_ptr"/>
-	  <reg name="fp" bitsize="64" type="data_ptr"/>
-	  <reg name="ra" bitsize="64" type="data_ptr"/>
-
-	  <reg name="lo" bitsize="64" regnum="33"/>
-	  <reg name="hi" bitsize="64" regnum="34"/>
-	  <reg name="pc" bitsize="64" regnum="37" type="code_ptr"/>
-	</feature>
-
-	<feature name="org.gnu.gdb.mips.fpu">
-		<reg name="f0" bitsize="64" type="ieee_double" regnum="38"/>
-		<reg name="f1" bitsize="64" type="ieee_double"/>
-		<reg name="f2" bitsize="64" type="ieee_double"/>
-		<reg name="f3" bitsize="64" type="ieee_double"/>
-		<reg name="f4" bitsize="64" type="ieee_double"/>
-		<reg name="f5" bitsize="64" type="ieee_double"/>
-		<reg name="f6" bitsize="64" type="ieee_double"/>
-		<reg name="f7" bitsize="64" type="ieee_double"/>
-		<reg name="f8" bitsize="64" type="ieee_double"/>
-		<reg name="f9" bitsize="64" type="ieee_double"/>
-		<reg name="f10" bitsize="64" type="ieee_double"/>
-		<reg name="f11" bitsize="64" type="ieee_double"/>
-		<reg name="f12" bitsize="64" type="ieee_double"/>
-		<reg name="f13" bitsize="64" type="ieee_double"/>
-		<reg name="f14" bitsize="64" type="ieee_double"/>
-		<reg name="f15" bitsize="64" type="ieee_double"/>
-		<reg name="f16" bitsize="64" type="ieee_double"/>
-		<reg name="f17" bitsize="64" type="ieee_double"/>
-		<reg name="f18" bitsize="64" type="ieee_double"/>
-		<reg name="f19" bitsize="64" type="ieee_double"/>
-		<reg name="f20" bitsize="64" type="ieee_double"/>
-		<reg name="f21" bitsize="64" type="ieee_double"/>
-		<reg name="f22" bitsize="64" type="ieee_double"/>
-		<reg name="f23" bitsize="64" type="ieee_double"/>
-		<reg name="f24" bitsize="64" type="ieee_double"/>
-		<reg name="f25" bitsize="64" type="ieee_double"/>
-		<reg name="f26" bitsize="64" type="ieee_double"/>
-		<reg name="f27" bitsize="64" type="ieee_double"/>
-		<reg name="f28" bitsize="64" type="ieee_double"/>
-		<reg name="f29" bitsize="64" type="ieee_double"/>
-		<reg name="f30" bitsize="64" type="ieee_double"/>
-		<reg name="f31" bitsize="64" type="ieee_double"/>
-		<reg name="fcsr" bitsize="64" group="float"/>
-		<reg name="fir" bitsize="64" group="float"/>
-	</feature>
-	<feature name="org.gnu.gdb.mips.cp0">
-		<reg name="status" bitsize="64" regnum="32"/>
-		<reg name="badvaddr" bitsize="64" regnum="35"/>
-		<reg name="cause" bitsize="64" regnum="36"/>
-	</feature>
 </target>
 )";
 
@@ -1160,11 +1080,12 @@ void HandlePacket() {
                 if(!strcmp((char*)command_buffer, "vCont;s:1"))
                 {
                     Step();
+                    return;
                 }else if(strstr((char*)command_buffer, "vCont;c"))
                 {
                     Continue();
+                    return;
                 }
-                return;
             }
             
         default:
