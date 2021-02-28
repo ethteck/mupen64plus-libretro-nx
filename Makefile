@@ -506,16 +506,16 @@ CPUOPTS += -fcommon
 
 ifeq ($(CORE_DEBUG), 1)
    ifeq ($(MSYSTEM),MINGW32)
-      LIBOPCODES = /mingw32/lib/binutils/libopcodes.a
-      LIBBFD = /mingw32/lib/binutils/libbfd.a
-      LIBIBERTY = /mingw32/lib/binutils/libiberty.a
+      LIBOPCODES ?= /mingw32/lib/binutils/libopcodes.a
+      LIBBFD ?= /mingw32/lib/binutils/libbfd.a
+      LIBIBERTY ?= /mingw32/lib/binutils/libiberty.a
       LDFLAGS += -lws2_32
    else
       # Where are these libs supposed to be found normally?
-      BINUTILS_BUILD_DIR=/Users/ethteck/binutils/build-binutils
-      LIBOPCODES = $(BINUTILS_BUILD_DIR)/opcodes/libopcodes.a
-      LIBBFD = $(BINUTILS_BUILD_DIR)/bfd/libbfd.a
-      LIBIBERTY = $(BINUTILS_BUILD_DIR)/libiberty/libiberty.a
+      BINUTILS_BUILD_DIR ?= /Users/ethteck/binutils/build-binutils
+      LIBOPCODES ?= $(BINUTILS_BUILD_DIR)/opcodes/libopcodes.a
+      LIBBFD ?= $(BINUTILS_BUILD_DIR)/bfd/libbfd.a
+      LIBIBERTY ?= $(BINUTILS_BUILD_DIR)/libiberty/libiberty.a
    endif
    COREFLAGS += -DDBG -DUSE_LIBOPCODES_GE_2_29 -DFMT_HEADER_ONLY
    LDFLAGS += -mconsole -lfmt $(LIBOPCODES) $(LIBBFD) -lintl -lz $(LIBIBERTY)
